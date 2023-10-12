@@ -3,12 +3,12 @@ import { createMachine } from "xstate";
 export const creditCheckMachine = createMachine(
   {
     context: {
-      userSSN: "123-45-6789",
-      userEmail: "user@example.com",
+      userSSN: "",
+      userEmail: "",
       equifaxScore: 0,
-      userLastName: "Doe",
+      userLastName: "",
       experianScore: 0,
-      userFirstName: "John",
+      userFirstName: "",
       transunionScore: 0,
     },
     id: "homePurchasingFlow",

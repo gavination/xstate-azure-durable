@@ -7,7 +7,27 @@ import { creditCheckMachine } from './creditCheckMachine';
 const activityName = 'startApplication';
 
 const startApplicationOrchestrator: OrchestrationHandler = function* (context: OrchestrationContext) {
-    const creditCheckActor = createActor(creditCheckMachine);
+    // kick up an instance of the credit check actor
+    console.log("I'm awake!");
+    const input = JSON.parse(context.df.getInput());
+    console.log("input: ", input);
+    const creditCheckActor = createActor(creditCheckMachine, {input});
+    creditCheckActor.start();
+
+    // explicitly look for actor's state if it exists
+    // in theory, we shouldn't have to do this. let's see!
+    const currentState = creditCheckActor.getPersistedState();
+    console.log("current state: ", currentState);
+
+
+    creditCheckActor.send({type: "Submit"});
+    console.log("new state: ", currentState);
+
+
+
+
+
+    
 };
 df.app.orchestration('startApplicationOrchestrator', startApplicationOrchestrator);
 
