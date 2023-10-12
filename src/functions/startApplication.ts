@@ -11,7 +11,10 @@ const startApplicationOrchestrator: OrchestrationHandler = function* (context: O
     console.log("I'm awake!");
     const input = JSON.parse(context.df.getInput());
     console.log("input: ", input);
-    const creditCheckActor = createActor(creditCheckMachine, {input});
+    const creditCheckActor = createActor(creditCheckMachine, {
+        input: input, 
+        id: context.df.instanceId,
+    });
     creditCheckActor.start();
 
     // explicitly look for actor's state if it exists
@@ -19,9 +22,9 @@ const startApplicationOrchestrator: OrchestrationHandler = function* (context: O
     const currentState = creditCheckActor.getPersistedState();
     console.log("current state: ", currentState);
 
-
     creditCheckActor.send({type: "Submit"});
-    console.log("new state: ", currentState);
+    const newState = creditCheckActor.getPersistedState();
+    console.log("new state: ", newState);
 
 
 
