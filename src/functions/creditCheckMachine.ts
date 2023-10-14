@@ -2,15 +2,16 @@ import { createMachine } from "xstate";
 
 export const creditCheckMachine = createMachine(
   {
-    context: {
-      userSSN: "",
-      userEmail: "",
-      equifaxScore: 0,
-      userLastName: "",
-      experianScore: 0,
-      userFirstName: "",
-      transunionScore: 0,
-    },
+    //todo: make a note that you can't model this in-studio yet
+    context: ({ input }: any) => ({
+      userSSN: input.userSSN,
+      userEmail: input.userEmail,
+      equifaxScore: input.equifaxScore,
+      userLastName: input.userLastName,
+      experianScore: input.experianScore,
+      userFirstName: input.userFirstName,
+      transunionScore: input.transunionScore,
+    }),
     id: "homePurchasingFlow",
     initial: "creditCheck",
     states: {
@@ -233,5 +234,5 @@ export const creditCheckMachine = createMachine(
     },
     guards: {},
     delays: {},
-  },
+  }
 );

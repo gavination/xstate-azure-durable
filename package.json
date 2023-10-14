@@ -13,7 +13,8 @@
   "dependencies": {
     "@azure/functions": "^4.0.0",
     "durable-functions": "^3.0.0-alpha.5",
-    "xstate": "^5.0.0-beta.33"
+    "xstate": "^5.0.0-beta.33",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^18.x",
