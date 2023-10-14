@@ -11,7 +11,7 @@ import {
   OrchestrationContext,
   OrchestrationHandler,
 } from "durable-functions";
-import { createActor } from "xstate";
+import { ActorStatus, createActor } from "xstate";
 import { creditCheckMachine } from "./creditCheckMachine";
 import { z } from "zod";
 const activityName = "startApplication";
@@ -31,6 +31,17 @@ const startCreditCheckOrchestrator: OrchestrationHandler = function* (
 
   // explicitly look for actor's state if it exists
   // in theory, we shouldn't have to do this. let's see!
+  console.log("current actor state: ", creditCheckActor.getPersistedState());
+  console.log("current actor status: ", creditCheckActor.status);
+
+  // wait for an event to be received...
+  const creditCheckEvent = yield context.df.waitForExternalEvent(
+    "UpdateCreditCheck"
+  );
+  console.log("event reeived: ", creditCheckEvent);
+  const creditCheckEventPayload = JSON.parse(creditCheckEvent);
+  creditCheckActor.send(creditCheckEventPayload);
+
   console.log("current actor state: ", creditCheckActor.getPersistedState());
 };
 df.app.orchestration(
@@ -86,11 +97,14 @@ const updateCreditCheckOrchestrator: HttpHandler = async (
     const status = await client.getStatus(instanceId);
 
     if (status.runtimeStatus === df.OrchestrationRuntimeStatus.Running) {
-      await client.raiseEvent(instanceId, "UpdateCreditCheck", body);
+      await client.raiseEvent(instanceId, "UpdateCreditCheck", {
+        type: eventPayloadSchema.type,
+      });
 
       return client.createCheckStatusResponse(request, instanceId);
     } else {
-      throw new Error("Orchestration is not running");
+      const error = new Error("Orchestration is not running");
+      return client.createCheckStatusResponse(request, error.message);
     }
   } catch (error) {
     context.log(error);
